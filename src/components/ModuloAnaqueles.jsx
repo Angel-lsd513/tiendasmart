@@ -83,11 +83,16 @@ async function llamarClaude(system, contenido) {
   const respuesta = await fetch('/api/claude', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 1000, system, messages: [{ role: 'user', content: contenido }] }),
+    body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 2048, system, messages: [{ role: 'user', content: contenido }] }),
   });
   const datos = await respuesta.json();
   const texto = (datos.content || []).map((b) => b.text || '').join('');
-  return JSON.parse(texto.replace(/```json|```/g, '').trim());
+  try {
+    return JSON.parse(texto.replace(/```json|```/g, '').trim());
+  } catch (e) {
+    console.error('Respuesta de Claude no es JSON válido', { stop_reason: datos.stop_reason, texto });
+    throw new Error(datos.stop_reason === 'max_tokens' ? 'La respuesta se cortó por límite de tokens' : 'La respuesta no fue JSON válido');
+  }
 }
 
 async function analizarZonaConIA(base64, nombreZona, listaProductos) {
