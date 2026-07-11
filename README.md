@@ -29,3 +29,5 @@ npm run build
 ## Despliegue
 
 Desplegado en Vercel: [tiendasmart-app.vercel.app](https://tiendasmart-app.vercel.app)
+
+Conectado a este repositorio de GitHub para despliegue automático en cada push a `main`.
