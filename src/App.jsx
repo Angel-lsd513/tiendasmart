@@ -1021,7 +1021,7 @@ function TabInventario({ productos, onNuevoProducto, onEditarProducto, onMarcarR
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           model: 'claude-sonnet-4-6',
-          max_tokens: 1000,
+          max_tokens: 2048,
           system: `Eres un experto en control de inventario para tiendas de abarrotes en México. Analizas fotos de anaqueles y detectas qué productos están bien surtidos, cuáles están bajos de existencia y cuáles parecen agotados o con huecos vacíos en el estante. La tienda suele manejar productos como: ${listaProductos || 'productos de abarrotes en general'}. Si reconoces alguno de estos productos en la foto, usa exactamente ese nombre. Además, identifica productos visibles que NO estén en esa lista: para cada uno, decide si es la misma línea de producto que uno ya existente pero de otro sabor, tamaño o presentación (ejemplo: si ya existe "Sabritas Original 45g" y ves "Sabritas Flamin Hot 45g", es una variante) — en ese caso pon el nombre EXACTO del producto existente en "variante_de"; si es un producto totalmente distinto, deja "variante_de" en null y sugiere una categoría de esta lista: ${CATEGORIAS_PRODUCTO.join(', ')}. Responde ÚNICAMENTE con un objeto JSON válido, sin texto adicional, sin explicaciones, sin bloques de código markdown, con esta estructura exacta: {"productos_detectados": [{"nombre": "nombre del producto", "estado": "bien_surtido o bajo o agotado"}], "huecos_vacios": numero, "recomendaciones": ["texto breve", "texto breve"], "productos_nuevos": [{"nombre": "nombre del producto nuevo", "variante_de": "nombre exacto o null", "categoria_sugerida": "una categoría de la lista o null"}]}`,
           messages: [{
             role: 'user',
@@ -1038,6 +1038,7 @@ function TabInventario({ productos, onNuevoProducto, onEditarProducto, onMarcarR
       const parseado = JSON.parse(limpio);
       setResultadoScanner(parseado);
     } catch (e) {
+      console.error('Error al analizar foto de anaquel', e);
       setErrorScanner('No se pudo analizar la foto. Intenta de nuevo con mejor luz o más de cerca.');
     } finally {
       setAnalizando(false);
